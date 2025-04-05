@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/navigation/Header";
 import PageTransition from "@/components/page/PageTransition";
 import StairTransition from "@/components/page/StairTransition";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import HeaderWrapper from "@/components/navigation/HeaderWrapper";
 
 const jetBrainsMono = JetBrains_Mono({
 	subsets: ["latin"],
@@ -30,7 +30,7 @@ export default function RootLayout({
 				suppressHydrationWarning>
 				<SpeedInsights />
 				<Analytics />
-				<Header />
+				<HeaderWrapper />
 				<StairTransition />
 				<PageTransition>{children}</PageTransition>
 			</body>
