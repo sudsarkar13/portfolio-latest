@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const info = [
 	{
@@ -34,6 +35,61 @@ const info = [
 ];
 
 const ContactPage: React.FC = () => {
+	const [isLoading, setIsLoading] = React.useState(false);
+	const [formData, setFormData] = React.useState({
+		firstName: "",
+		lastName: "",
+		email: "",
+		phone: "",
+		service: "",
+		message: "",
+	});
+
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleServiceChange = (value: string) => {
+		setFormData((prev) => ({ ...prev, service: value }));
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setIsLoading(true);
+
+		try {
+			const response = await fetch("/api/contact", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
+
+			if (response.ok) {
+				toast.success("Message sent successfully!");
+				setFormData({
+					firstName: "",
+					lastName: "",
+					email: "",
+					phone: "",
+					service: "",
+					message: "",
+				});
+			} else {
+				toast.error("Failed to send message");
+			}
+		} catch (error) {
+			toast.error("Something went wrong");
+			console.error(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	return (
 		<motion.section
 			initial={{ opacity: 0 }}
@@ -47,6 +103,7 @@ const ContactPage: React.FC = () => {
 					{/* form */}
 					<div className={`xl:w-[54%] order-2 xl:order-none`}>
 						<form
+							onSubmit={handleSubmit}
 							className={`flex flex-col gap-6 p-10 bg-[#27272c] rounded-xl`}>
 							<h3 className={`text-4xl text-accent`}>Let's Talk</h3>
 							<p className={`text-white/60`}>
@@ -59,13 +116,37 @@ const ContactPage: React.FC = () => {
 							</p>
 							{/* input */}
 							<div className={`grid grid-cols-1 md:grid-cols-2 gap-6`}>
-								<Input type="firstname" placeholder="First Name" />
-								<Input type="lastname" placeholder="Last Name" />
-								<Input type="email" placeholder="Email Address" />
-								<Input type="phone" placeholder="Phone Number" />
+								<Input
+									type="text"
+									name="firstName"
+									placeholder="First Name"
+									value={formData.firstName}
+									onChange={handleChange}
+								/>
+								<Input
+									type="text"
+									name="lastName"
+									placeholder="Last Name"
+									value={formData.lastName}
+									onChange={handleChange}
+								/>
+								<Input
+									type="email"
+									name="email"
+									placeholder="Email Address"
+									value={formData.email}
+									onChange={handleChange}
+								/>
+								<Input
+									type="tel"
+									name="phone"
+									placeholder="Phone Number"
+									value={formData.phone}
+									onChange={handleChange}
+								/>
 							</div>
 							{/* select */}
-							<Select>
+							<Select onValueChange={handleServiceChange}>
 								<SelectTrigger className={`w-full `}>
 									<SelectValue placeholder={`Select a service`} />
 								</SelectTrigger>
@@ -85,13 +166,20 @@ const ContactPage: React.FC = () => {
 							</Select>
 							{/* textarea */}
 							<Textarea
+								name="message"
 								placeholder="Type your message here."
 								className={`h-[200px]`}
+								value={formData.message}
+								onChange={handleChange}
 							/>
 							{/* button */}
 							<div className={`flex justify-center`}>
-								<Button size={`md`} type="submit" className={`max-w-40`}>
-									Send message
+								<Button
+									size={`md`}
+									type="submit"
+									className={`max-w-40`}
+									disabled={isLoading}>
+									{isLoading ? "Sending..." : "Send message"}
 								</Button>
 							</div>
 						</form>
