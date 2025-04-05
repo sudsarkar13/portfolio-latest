@@ -21,8 +21,10 @@ const Header: React.FC = () => {
 						<Link href={`/contact`}>
 							<Button>Hire me</Button>
 						</Link>
-						<Link href={`/admin`}>
-							<Button className={`hover:bg-red-600 hover:text-white`}>Admin login</Button>
+						<Link href={`/admin/login`}>
+							<Button className={`hover:bg-[#2dad7a] hover:text-white`}>
+								Admin login
+							</Button>
 						</Link>
 					</div>
 
